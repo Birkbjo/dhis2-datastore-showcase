@@ -66,7 +66,7 @@ export const TodosWithValidation = () => {
                             <li style={{ opacity: 0.5 }}>
                                 {
                                     mutation.variables?.todos[
-                                        mutation.variables?.todos.length -1
+                                        mutation.variables?.todos.length - 1
                                     ]
                                 }
                             </li>
