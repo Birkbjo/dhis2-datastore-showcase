@@ -1,45 +1,17 @@
-import { InputField, Button } from "@dhis2/ui";
+import { InputField, Button, IconCross16 } from "@dhis2/ui";
 import React, { useState } from "react";
-import { useMutateDataStoreValueReactQuery } from "./useDataStore";
-import { useDataStoreValueWithValidation } from "./useDataStoreWithValidation";
-import { z } from "zod";
-
-const todosSchema = z.object({
-    todos: z.array(z.string()),
-});
-
-type Todos = z.infer<typeof todosSchema>;
-
-const useTodos = () => {
-    // notice how we dont pass the type,
-    // but it's inferred from the return-type of validate through the zod-schema
-    return useDataStoreValueWithValidation({
-        namespace: "maintenance",
-        key: "todos",
-        validate: todosSchema.parse,
-    });
-};
+import { useTodosController } from "./useTodosController";
 
 export const TodosWithValidation = () => {
     const [newTodo, setNewTodo] = useState<string | undefined>(undefined);
-    // now we dont have to care about the wrapping result-object
-    const { data, error, status } = useTodos();
-    const mutation = useMutateDataStoreValueReactQuery<Todos>({
-        namespace: "maintenance",
-        key: "todos",
-    });
+    const { todos, addTodo, removeTodo, mutation, query } =
+        useTodosController();
 
     const updateTodos = async () => {
         if (!newTodo) return;
-        const oldTodos = data?.todos || [];
-
-        await mutation.mutateAsync({
-            ...data,
-            todos: [...oldTodos, newTodo],
-        });
+        await addTodo(newTodo);
         setNewTodo(undefined);
     };
-
     return (
         <div>
             <h3>React query with validation</h3>
@@ -50,15 +22,32 @@ export const TodosWithValidation = () => {
                     onChange={({ value }) => setNewTodo(value)}
                 />
 
-                <Button disabled={mutation.isLoading} onClick={updateTodos}>
+                <Button
+                {/* Can useful to prevent updates while query is loading,
+            especially when we handle the merging of the object */}
+                    disabled={mutation.isLoading || query.isFetching}
+                    onClick={updateTodos}
+                >
                     Add
                 </Button>
             </span>
             <div>
                 <h3>Todos</h3>
                 <ul>
-                    {data?.todos?.map((todo, i) => (
-                        <li key={i}>{todo}</li>
+                    {todos?.map((todo, i) => (
+                        <li key={i}>
+                            <span
+                                style={{
+                                    alignItems: "center",
+                                    display: "flex",
+                                    gap: 8,
+                                }}
+                                onClick={() => removeTodo(i)}
+                            >
+                                {todo}
+                                <IconCross16 />
+                            </span>
+                        </li>
                     ))}
                     {
                         // SUPER SIMPLE OPTIMISTIC UPDATES
