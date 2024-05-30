@@ -26,11 +26,11 @@ export const Todos = () => {
 
     const [mutate] = useMutateDataStoreValue(todosOptions);
 
-    const updateTodos = () => {
+    const updateTodos = async () => {
         const oldData = data?.dataStoreData;
         const oldTodos = oldData?.todos || [];
-        mutate({
-            // this is not typed correctly
+        await mutate({
+            // this type is not enforced by mutate
             data: {
                 ...oldData,
                 todos: [...oldTodos, newTodo],
@@ -75,15 +75,20 @@ export const TodosReactQuery = () => {
         useDataStoreValueReactQuery<Todos>(todosOptions);
     const mutation = useMutateDataStoreValueReactQuery<Todos>(todosOptions);
 
-    const updateTodos = () => {
-        if (!newTodo) return;
+    const updateTodos = async () => {
+        if (!newTodo) {
+            return;
+        }
+
         const oldTodos = data?.todos || [];
-        mutation.mutate({
+
+        await mutation.mutateAsync({
             // this is now typed
             // and this let us catch a bug - newTodo can be undefined
             ...data,
             todos: [...oldTodos, newTodo],
         });
+        setNewTodo(undefined);
     };
 
     return (

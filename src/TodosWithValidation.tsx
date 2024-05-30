@@ -62,6 +62,7 @@ export const TodosWithValidation = () => {
                     ))}
                     {
                         // SUPER SIMPLE OPTIMISTIC UPDATES
+                        // adds the last todo when mutation is pending, since we append to end
                         mutation.isLoading && (
                             <li style={{ opacity: 0.5 }}>
                                 {

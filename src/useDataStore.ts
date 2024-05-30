@@ -70,7 +70,7 @@ interface DataStoreMutationVariables extends UseMutateDataStoreValueOptions {
 const dataStoreMutation = {
     resource: "dataStore",
     type: "update",
-    // mutation type is not correct and encorces id to be a string, but it actually works with a callback for dynamic values
+    // mutation type is not correct and enforces id to be a string, but it actually works with a callback for dynamic values
     id: (variables: DataStoreMutationVariables) =>
         `${variables.namespace}/${variables.key}`,
     data: (variables: DataStoreMutationVariables) => variables.data,
@@ -80,6 +80,7 @@ export const useMutateDataStoreValue = (
     options: UseMutateDataStoreValueOptions
 ) => {
     const mutation = useDataMutation(dataStoreMutation, { variables: options });
+
     return mutation;
 };
 
@@ -97,7 +98,8 @@ export const useMutateDataStoreValue = (
 
 
     I have plans to simplify this, by eg. exposing a query-fn that you can just import.
-    And simplify engine.query objects from { result: { resource: 'dataStore'} } etc to just { resource: 'dataStore' }.
+        We could even set a default queryFn hook in app-platform, so you just have to pass the queryKey (eg. a query-object)
+    Also want simplify engine.query objects from { result: { resource: 'dataStore'} } etc to just { resource: 'dataStore' }.
     Fixing types in app-runtime would also simplify all data-handling A LOT in TS.
 */
 
@@ -149,7 +151,6 @@ export const useMutateDataStoreValueReactQuery = <
                     id: `${options.namespace}/${options.key}`,
                 },
             ]),
-
     });
     return mutation;
 };

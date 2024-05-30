@@ -42,7 +42,7 @@ export const useDataStoreValueWithValidation = <TResult = unknown>(
 };
 
 // validation for mutation is not strictly necessary, because if you use the
-// same type for updates as you do for fetching (eg. if you need to merge data) ( and types in general) 
+// same type for updates as you do for fetching (eg. if you need to merge data) ( and types in general)
 // typescript should prevent you from doing something bad.
 // It can also easily be done in a callback before calling mutate, so I dont see a need to create
 // an abstraction for that inside the mutation hook
